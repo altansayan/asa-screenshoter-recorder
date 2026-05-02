@@ -406,7 +406,9 @@ def show_splash_screen(already_running=False):
 
     # Tamam butonu ve Geri Sayım Mantığı
     btn_text_base = "Tamam" if is_turkish else "OK"
-    ok_btn = tk.Button(splash, text=f"{btn_text_base} (5)", font=('Segoe UI', 9, 'bold'), bg='#636e72', fg='white', state=tk.DISABLED, command=splash.destroy, relief=tk.FLAT, activebackground='#74b9ff', activeforeground='white')
+    
+    # Butonu DISABLED yapmak Windows'ta metin rengini bozduğu için (gri üstüne gri) normal bırakıp komutunu siliyoruz
+    ok_btn = tk.Button(splash, text=f"{btn_text_base} (5)", font=('Segoe UI', 9, 'bold'), bg='#636e72', fg='white', command=lambda: None, relief=tk.FLAT, activebackground='#636e72', activeforeground='white')
     ok_btn.pack(side='bottom', pady=(0, 10), ipadx=30, ipady=3)
 
     def countdown(count):
@@ -418,7 +420,7 @@ def show_splash_screen(already_running=False):
             ok_btn.config(text=f"{btn_text_base} ({count})")
             splash.after(1000, countdown, count-1)
         else:
-            ok_btn.config(text=btn_text_base, state=tk.NORMAL, bg='#0984e3', cursor='hand2')
+            ok_btn.config(text=btn_text_base, command=splash.destroy, bg='#0984e3', cursor='hand2', activebackground='#74b9ff')
 
     if already_running:
         if is_turkish:
