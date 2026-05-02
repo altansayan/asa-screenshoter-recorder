@@ -1,0 +1,25 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE ve Editör klasörleri
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Sanal ortamlar (Virtual Environments)
+venv/
+env/
+ENV/
+.env
+
+# İşletim sistemi kalıntıları
+.DS_Store
+Thumbs.db
+
+# Log ve geçici dosyalar
+*.log
+*.tmp
+*.bak
