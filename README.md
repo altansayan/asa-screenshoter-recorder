@@ -1,9 +1,10 @@
 # ASA Screenshot & Video Tool
 
-*(🇬🇧 English below | 🇹🇷 Türkçe aşağıda)*
+*( [🇬🇧 Go to English Version](#english-version) | [🇹🇷 Türkçe Okumaya Devam Et](#turkish-version) )*
 
 ---
 
+<a id="turkish-version"></a>
 ## 🇹🇷 ASA Screenshot & Video Tool (Türkçe)
 
 > [!WARNING]
@@ -61,6 +62,7 @@ Uygulamanın varsayılan ayarlarını (FPS ve Kayıt Yeri) kendi isteğinize gö
 
 ---
 
+<a id="english-version"></a>
 ## 🇬🇧 ASA Screenshot & Video Tool (English)
 
 > [!WARNING]
