@@ -62,6 +62,15 @@ You can easily change the default settings (FPS and Save Directory) directly ins
 - **Save Directory:** Locate line `88` approx. `self.save_dir = os.path.expanduser("~\\Pictures\\Screenshots")` and change it to any absolute path (e.g., `C:\\Records`).
 - **Video FPS Rate:** Locate line `275` approx. `fps = 25.0` and change the value to `30.0` or `60.0` depending on your required smoothness.
 
+### 📦 How to Build (.exe)
+If you want to compile the source code into a standalone Windows Executable (`.exe`), you can use PyInstaller:
+1. Install PyInstaller: `pip install pyinstaller`
+2. Run the build command in your terminal:
+```bash
+pyinstaller --noconsole --onefile --version-file version_info.txt --name asa_screen --icon icon.ico screenshot_tool.py
+```
+3. Your compiled executable will be ready inside the `dist/` folder!
+
 ### 👨‍💻 Developer
 **Developer:** Altan Sezer Ayan
 *Developed under the ASA Intelligence AI and automation systems.*
@@ -128,6 +137,15 @@ WshShell.Run "pythonw.exe screenshot_tool.py", 0, False
 Uygulamanın varsayılan ayarlarını (FPS ve Kayıt Yeri) kendi isteğinize göre `screenshot_tool.py` dosyasından kolayca değiştirebilirsiniz:
 - **Dosyaların Kaydedileceği Klasör:** Satır `88` civarındaki `self.save_dir = os.path.expanduser("~\\Pictures\\Screenshots")` kodunu bularak istediğiniz bir klasör yolunu (Örn: `C:\\Kayıtlar`) yazabilirsiniz.
 - **Video FPS Ayarı:** Satır `275` civarındaki `fps = 25.0` değerini `30.0` (TV) veya `60.0` (Oyun akıcılığı) olarak değiştirebilirsiniz.
+
+### 📦 Nasıl .exe Olarak Derlenir (Build)?
+Kaynak kodlarını Python kurulu olmayan bilgisayarlarda da çalışabilecek tek bir `.exe` dosyası haline getirmek isterseniz PyInstaller kullanabilirsiniz:
+1. PyInstaller'ı kurun: `pip install pyinstaller`
+2. Terminalde derleme komutunu çalıştırın:
+```bash
+pyinstaller --noconsole --onefile --version-file version_info.txt --name asa_screen --icon icon.ico screenshot_tool.py
+```
+3. Derlenmiş hazır uygulamanız `dist/` klasörünün içinde `asa_screen.exe` adıyla oluşacaktır!
 
 ### 👨‍💻 Geliştirici
 **Developer:** Altan Sezer Ayan
