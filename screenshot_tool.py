@@ -388,7 +388,7 @@ def show_splash_screen(already_running=False):
     
     # Ekranın tam ortasına yerleştir
     w = 480
-    h = 200
+    h = 240
     ws = splash.winfo_screenwidth()
     hs = splash.winfo_screenheight()
     x = int((ws/2) - (w/2))
@@ -399,7 +399,14 @@ def show_splash_screen(already_running=False):
     title_lbl.pack(pady=(20, 10))
     
     status_lbl = tk.Label(splash, font=('Segoe UI', 10), bg='#2d3436', fg='#dfe6e9')
-    status_lbl.pack(pady=5)
+    status_lbl.pack(pady=(5, 10))
+
+    instr_text_tr = "📷 Ekran Görüntüsü İçin: Sadece Shift+Alt\n🎥 Video Kaydı: Shift+Alt işaretçi açıldıktan sonra 'R' tuşu"
+    instr_text_en = "📷 Screenshot: Only Shift+Alt\n🎥 Video Record: Shift+Alt pointer then press 'R' key"
+    instr_text = instr_text_tr if is_turkish else instr_text_en
+    
+    instr_lbl = tk.Label(splash, text=instr_text, font=('Segoe UI', 9), bg='#2d3436', fg='#fdcb6e', justify='center')
+    instr_lbl.pack(pady=0)
     
     copy_lbl = tk.Label(splash, text="Copyright © 2026 Altan Sezer Ayan", font=('Segoe UI', 8), bg='#2d3436', fg='#636e72')
     copy_lbl.pack(side='bottom', pady=(5, 10))
@@ -433,10 +440,10 @@ def show_splash_screen(already_running=False):
     else:
         if is_turkish:
             status_lbl.config(text="Başlatılıyor...")
-            ready_text = "Tamamlandı! (Shift+Alt ile kullanabilirsiniz)"
+            ready_text = "Tamamlandı! Arka planda hazır."
         else:
             status_lbl.config(text="Starting...")
-            ready_text = "Ready! (You can use the Shift+Alt shortcut)"
+            ready_text = "Ready in the background!"
             
         def show_ready():
             if splash.winfo_exists():

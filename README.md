@@ -67,7 +67,7 @@ If you want to compile the source code into a standalone Windows Executable (`.e
 1. Install PyInstaller: `pip install pyinstaller`
 2. Run the build command in your terminal:
 ```bash
-pyinstaller --noconsole --onefile --version-file version_info.txt --name asa_screen --icon icon.ico screenshot_tool.py
+pyinstaller --noconsole --onefile --version-file version_info.txt --name screenshotandrecoder --icon icon.ico screenshot_tool.py
 ```
 3. Your compiled executable will be ready inside the `dist/` folder!
 
@@ -143,9 +143,9 @@ Kaynak kodlarını Python kurulu olmayan bilgisayarlarda da çalışabilecek tek
 1. PyInstaller'ı kurun: `pip install pyinstaller`
 2. Terminalde derleme komutunu çalıştırın:
 ```bash
-pyinstaller --noconsole --onefile --version-file version_info.txt --name asa_screen --icon icon.ico screenshot_tool.py
+pyinstaller --noconsole --onefile --version-file version_info.txt --name screenshotandrecoder --icon icon.ico screenshot_tool.py
 ```
-3. Derlenmiş hazır uygulamanız `dist/` klasörünün içinde `asa_screen.exe` adıyla oluşacaktır!
+3. Derlenmiş hazır uygulamanız `dist/` klasörünün içinde `screenshotandrecoder.exe` adıyla oluşacaktır!
 
 ### 👨‍💻 Geliştirici
 **Developer:** Altan Sezer Ayan
