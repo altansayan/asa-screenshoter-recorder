@@ -23,7 +23,10 @@ Bu proje, ASA Intelligence ekosistemi için tasarlanmış yüksek performanslı,
 - **DPI Farkındalığı:** Windows'un ekran ölçeklendirmelerinden etkilenmez; seçimleri orijinal fiziksel pikseller üzerinden kaydeder.
 
 ### 🛠 Kurulum ve Bağımlılıklar
-Sistemin düzgün çalışabilmesi için aşağıdaki kütüphaneler gereklidir. Kurmak için terminalde aşağıdaki komutu çalıştırın:
+Sistemin düzgün çalışabilmesi için öncelikle bilgisayarınızda **Python 3.x** ve **pip** paket yöneticisinin yüklü olması gerekir. 
+*Eğer yüklü değilse:* [Python.org](https://www.python.org/downloads/windows/) adresinden Python'u indirin ve kurulum ekranındaki **"Add python.exe to PATH"** kutucuğunu **kesinlikle işaretleyin**. Bu adım, `pip` komutunun terminalde tanınmasını sağlar.
+
+Ardından gerekli kütüphaneleri kurmak için terminalde (CMD veya PowerShell) aşağıdaki komutu çalıştırın:
 ```bash
 pip install pillow pyperclip keyboard pywin32 mss opencv-python numpy
 ```
@@ -84,7 +87,10 @@ This project is a high-performance, background-running screen capture and video 
 - **DPI Awareness:** Immune to Windows display scaling issues; it precisely maps logical coordinates to physical pixels.
 
 ### 🛠 Installation and Dependencies
-The following libraries are required. To install them, run:
+For the system to work properly, you must first have **Python 3.x** and the **pip** package manager installed.
+*If you don't have them:* Download Python from [Python.org](https://www.python.org/downloads/windows/) and **make sure to check the "Add python.exe to PATH"** box during installation. This step is crucial for your terminal to recognize the `pip` command.
+
+Then, to install the required libraries, open your terminal (CMD or PowerShell) and run:
 ```bash
 pip install pillow pyperclip keyboard pywin32 mss opencv-python numpy
 ```
