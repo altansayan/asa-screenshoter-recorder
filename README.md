@@ -34,6 +34,11 @@ Sistemin düzgün çalışabilmesi için aşağıdaki kütüphaneler gereklidir.
 1. Terminalde klasör dizinine gidip aracı çalıştırın: `python screenshot_tool.py`
 2. **Fotoğraf Çekmek İçin:** İstediğiniz zaman klavyeden `Shift + Alt` tuşlarına aynı anda basın. Ekran hafifçe kararacak, farenizle istediğiniz alanı seçip bırakın.
 3. **Video Çekmek İçin:** `Shift + Alt` yaptıktan sonra klavyeden `R` veya `r` tuşuna basın. Seçim ekranı hafif kırmızımsı bir renge döner. Farenizle bölge seçtiğinizde kayıt otomatik başlar.
-4. **Kaydı Durdurmak İçin:** Video kaydı başladığında ekranın sağ alt köşesinde çıkan kırmızı **⏹ KAYDI DURDUR** butonuna tıklayın veya `ESC` tuşuna basın.
+4. **Kaydı Durdurmak İçin:** Video kaydı başladığında ekranın sağ alt köşesinde çıkan kırmızı **⏹ STOP** butonuna tıklayın veya `ESC` tuşuna basın.
 
 > **NOT:** Araç, Windows başlangıcında otomatik çalışması için `Startup` klasörüne atılan bir `.vbs` betiği üzerinden yönetilebilir.
+
+## 👨‍💻 Geliştirici (Developer)
+
+**Developer:** Altan Sezer Ayan
+*Bu araç, ASA Intelligence yapay zeka ve otomasyon sistemleri kapsamında geliştirilmiştir.*

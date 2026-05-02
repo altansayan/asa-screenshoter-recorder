@@ -1,3 +1,11 @@
+"""
+ASA-AI Screenshot & Video Tool
+Developer: Altan Sezer Ayan
+
+Bu kod, ASA Intelligence otomasyon sistemleri kapsamında 
+arka planda ekran görüntüsü ve yüksek kalite MP4 video yakalamak için geliştirilmiştir.
+"""
+
 import tkinter as tk
 from PIL import ImageGrab
 import pyperclip
@@ -359,7 +367,7 @@ def main():
         sys.exit(0)
 
     print("=====================================================")
-    print(" ASA-AI Screenshot & Video Araci Baslatildi!")
+    print(" ASA Screenshot & Video Araci Baslatildi!")
     print(" Kısayol: Secim baslatmak icin 'Shift + Alt' tuslarina basin.")
     print(" Video Modu: Secim ekranindayken 'R' tusuna basin.")
     print(" Cikis: Bu pencereyi kapatin veya 'Ctrl+C' yapin.")
