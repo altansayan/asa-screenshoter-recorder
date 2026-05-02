@@ -1,70 +1,6 @@
 # ASA Screenshot & Video Tool
 
-*( [🇬🇧 Go to English Version](#english-version) | [🇹🇷 Türkçe Okumaya Devam Et](#turkish-version) )*
-
----
-
-<a id="turkish-version"></a>
-## 🇹🇷 ASA Screenshot & Video Tool (Türkçe)
-
-> [!WARNING]
-> **Sistem Gereksinimi:** Bu araç; Pano (Clipboard) yönetimi, Mutex (Single Instance) ve DPI API'leri doğrudan Windows'un çekirdek kütüphanelerine (Win32) bağlı olduğu için **sadece Windows işletim sistemlerinde** çalışmak üzere tasarlanmıştır. macOS veya Linux'ta çalışmaz.
-
-> [!TIP]
-> ⚡ **Yapay Zeka (AI) ve Terminal (CLI) Araçları İçin Üretildi!** Kaydedilen görsellerin dosya yolları anında panoya düşer. Terminalinize veya yapay zeka asistanınıza saniyeler içinde yapıştırın ve geliştirme hızınızı (workflow) ikiye katlayın! Sadece (Ctrl+V)
-
-Bu proje, ASA Intelligence ekosistemi için tasarlanmış yüksek performanslı, arka planda çalışan ve global kısayollarla (Shift+Alt) tetiklenen bir ekran kaydetme (görüntü & video) ve pano (clipboard) otomasyon aracıdır.
-
-### 🚀 Özellikler
-- **Hızlı Ekran Görüntüsü (Screenshot):** İstenilen bir ekran bölgesini seçerek yüksek kalitede anında PNG olarak kaydeder.
-- **Yüksek Kalite Video Kaydı:** Ekranın sadece belirlediğiniz bir alanını, orijinal çözünürlük oranlarını bozmadan (720p/1080p uyumlu), MP4 formatında saniyede 25 kare (FPS - Avrupa/Türkiye TV Standardı) hızında video olarak çeker.
-- **Akıllı Pano (Clipboard) Yönetimi:** Kaydedilen fotoğraf veya videoları hem *dosya (CF_HDROP)* hem de *metin/bağlantı (CF_UNICODETEXT)* olarak panoya kopyalar.
-- **Single Instance (Tekil Çalışma):** Windows Mutex mekanizması sayesinde sistemde aynı anda sadece tek bir uygulamanın çalışmasına izin verilir.
-- **DPI Farkındalığı:** Windows'un ekran ölçeklendirmelerinden etkilenmez; seçimleri orijinal fiziksel pikseller üzerinden kaydeder.
-
-### 🛠 Kurulum ve Bağımlılıklar
-Sistemin düzgün çalışabilmesi için öncelikle bilgisayarınızda **Python 3.x** ve **pip** paket yöneticisinin yüklü olması gerekir. 
-*Eğer yüklü değilse:* [Python.org](https://www.python.org/downloads/windows/) adresinden Python'u indirin ve kurulum ekranındaki **"Add python.exe to PATH"** kutucuğunu **kesinlikle işaretleyin**. Bu adım, `pip` komutunun terminalde tanınmasını sağlar.
-
-Ardından gerekli kütüphaneleri kurmak için terminalde (CMD veya PowerShell) aşağıdaki komutu çalıştırın:
-```bash
-pip install pillow pyperclip keyboard pywin32 mss opencv-python numpy
-```
-
-**Bağımlılıkların İşlevleri:**
-1. **Pillow (PIL)**: Ekran görüntülerini yakalamak ve formatlarını dönüştürmek için.
-2. **keyboard**: Arka planda klavye kısayollarını (`Shift+Alt`) dinlemek için.
-3. **pywin32**: Windows API erişimi (Pano yönetimi ve Mutex kilitleri) için.
-4. **mss**: Video kaydı için ekranı sıfır gecikmeyle (ultra hızlı) kopyalamak için.
-5. **opencv-python**: Kareleri birleştirip MP4 formatında video kodlamak için.
-6. **numpy**: Ham pikselleri OpenCV matrisine çevirmek için.
-7. **pyperclip**: Pano işlemleri başarısız olursa dosya yolunu düz metin olarak kopyalamak için yedek (fallback) sistem.
-
-### 🕹 Kullanım
-1. Terminalde klasör dizinine gidip aracı çalıştırın: `python screenshot_tool.py`
-2. **Fotoğraf Çekmek İçin:** Klavyeden `Shift + Alt` tuşlarına aynı anda basın. Alanı seçin.
-3. **Video Çekmek İçin:** `Shift + Alt` yaptıktan sonra `R` tuşuna basın. Alanı seçtiğiniz an kayıt başlar.
-4. **Kaydı Durdurmak İçin:** Ekranın sağ alt köşesinde çıkan **⏹ STOP** butonuna tıklayın veya `ESC` tuşuna basın.
-
-### ⚙️ Windows Başlangıcında Otomatik Çalıştırma (VBScript)
-Aracın siyah terminal penceresi görünmeden arka planda tamamen gizli (stealth) çalışması için bir VBScript oluşturabilirsiniz.
-1. Bilgisayarınızda `asa_screenshot_tool.vbs` adında yeni bir metin dosyası oluşturun.
-2. İçine şu kodları yapıştırın (Dosya yolunu kendi sisteminize göre düzenleyin):
-```vbs
-Set WshShell = CreateObject("WScript.Shell")
-WshShell.CurrentDirectory = "C:\Users\SeninAdin\repos\asa-screenshoter"
-WshShell.Run "pythonw.exe screenshot_tool.py", 0, False
-```
-3. Klavyeden `Win + R` tuşlarına basıp açılan kutuya `shell:startup` yazın. Açılan Başlangıç (Startup) klasörünün içine bu `.vbs` dosyasını atın. Artık bilgisayarınız her açıldığında araç arka planda hazır olacaktır.
-
-### 🛠️ Özelleştirme Ayarları (Ayarları Değiştirme)
-Uygulamanın varsayılan ayarlarını (FPS ve Kayıt Yeri) kendi isteğinize göre `screenshot_tool.py` dosyasından kolayca değiştirebilirsiniz:
-- **Dosyaların Kaydedileceği Klasör:** Satır `88` civarındaki `self.save_dir = os.path.expanduser("~\\Pictures\\Screenshots")` kodunu bularak istediğiniz bir klasör yolunu (Örn: `C:\\Kayıtlar`) yazabilirsiniz.
-- **Video FPS Ayarı:** Satır `275` civarındaki `fps = 25.0` değerini `30.0` (TV) veya `60.0` (Oyun akıcılığı) olarak değiştirebilirsiniz.
-
-### 👨‍💻 Geliştirici
-**Developer:** Altan Sezer Ayan
-*Bu araç, ASA Intelligence yapay zeka ve otomasyon sistemleri kapsamında geliştirilmiştir.*
+*( [🇬🇧 English Version](#english-version) | [🇹🇷 Türkçe Okumaya Devam Et](#turkish-version) )*
 
 ---
 
@@ -129,3 +65,67 @@ You can easily change the default settings (FPS and Save Directory) directly ins
 ### 👨‍💻 Developer
 **Developer:** Altan Sezer Ayan
 *Developed under the ASA Intelligence AI and automation systems.*
+
+---
+
+<a id="turkish-version"></a>
+## 🇹🇷 ASA Screenshot & Video Tool (Türkçe)
+
+> [!WARNING]
+> **Sistem Gereksinimi:** Bu araç; Pano (Clipboard) yönetimi, Mutex (Single Instance) ve DPI API'leri doğrudan Windows'un çekirdek kütüphanelerine (Win32) bağlı olduğu için **sadece Windows işletim sistemlerinde** çalışmak üzere tasarlanmıştır. macOS veya Linux'ta çalışmaz.
+
+> [!TIP]
+> ⚡ **Yapay Zeka (AI) ve Terminal (CLI) Araçları İçin Üretildi!** Kaydedilen görsellerin dosya yolları anında panoya düşer. Terminalinize veya yapay zeka asistanınıza saniyeler içinde yapıştırın ve geliştirme hızınızı (workflow) ikiye katlayın! Sadece (Ctrl+V)
+
+Bu proje, ASA Intelligence ekosistemi için tasarlanmış yüksek performanslı, arka planda çalışan ve global kısayollarla (Shift+Alt) tetiklenen bir ekran kaydetme (görüntü & video) ve pano (clipboard) otomasyon aracıdır.
+
+### 🚀 Özellikler
+- **Hızlı Ekran Görüntüsü (Screenshot):** İstenilen bir ekran bölgesini seçerek yüksek kalitede anında PNG olarak kaydeder.
+- **Yüksek Kalite Video Kaydı:** Ekranın sadece belirlediğiniz bir alanını, orijinal çözünürlük oranlarını bozmadan (720p/1080p uyumlu), MP4 formatında saniyede 25 kare (FPS - Avrupa/Türkiye TV Standardı) hızında video olarak çeker.
+- **Akıllı Pano (Clipboard) Yönetimi:** Kaydedilen fotoğraf veya videoları hem *dosya (CF_HDROP)* hem de *metin/bağlantı (CF_UNICODETEXT)* olarak panoya kopyalar.
+- **Single Instance (Tekil Çalışma):** Windows Mutex mekanizması sayesinde sistemde aynı anda sadece tek bir uygulamanın çalışmasına izin verilir.
+- **DPI Farkındalığı:** Windows'un ekran ölçeklendirmelerinden etkilenmez; seçimleri orijinal fiziksel pikseller üzerinden kaydeder.
+
+### 🛠 Kurulum ve Bağımlılıklar
+Sistemin düzgün çalışabilmesi için öncelikle bilgisayarınızda **Python 3.x** ve **pip** paket yöneticisinin yüklü olması gerekir. 
+*Eğer yüklü değilse:* [Python.org](https://www.python.org/downloads/windows/) adresinden Python'u indirin ve kurulum ekranındaki **"Add python.exe to PATH"** kutucuğunu **kesinlikle işaretleyin**. Bu adım, `pip` komutunun terminalde tanınmasını sağlar.
+
+Ardından gerekli kütüphaneleri kurmak için terminalde (CMD veya PowerShell) aşağıdaki komutu çalıştırın:
+```bash
+pip install pillow pyperclip keyboard pywin32 mss opencv-python numpy
+```
+
+**Bağımlılıkların İşlevleri:**
+1. **Pillow (PIL)**: Ekran görüntülerini yakalamak ve formatlarını dönüştürmek için.
+2. **keyboard**: Arka planda klavye kısayollarını (`Shift+Alt`) dinlemek için.
+3. **pywin32**: Windows API erişimi (Pano yönetimi ve Mutex kilitleri) için.
+4. **mss**: Video kaydı için ekranı sıfır gecikmeyle (ultra hızlı) kopyalamak için.
+5. **opencv-python**: Kareleri birleştirip MP4 formatında video kodlamak için.
+6. **numpy**: Ham pikselleri OpenCV matrisine çevirmek için.
+7. **pyperclip**: Pano işlemleri başarısız olursa dosya yolunu düz metin olarak kopyalamak için yedek (fallback) sistem.
+
+### 🕹 Kullanım
+1. Terminalde klasör dizinine gidip aracı çalıştırın: `python screenshot_tool.py`
+2. **Fotoğraf Çekmek İçin:** Klavyeden `Shift + Alt` tuşlarına aynı anda basın. Alanı seçin.
+3. **Video Çekmek İçin:** `Shift + Alt` yaptıktan sonra `R` tuşuna basın. Alanı seçtiğiniz an kayıt başlar.
+4. **Kaydı Durdurmak İçin:** Ekranın sağ alt köşesinde çıkan **⏹ STOP** butonuna tıklayın veya `ESC` tuşuna basın.
+
+### ⚙️ Windows Başlangıcında Otomatik Çalıştırma (VBScript)
+Aracın siyah terminal penceresi görünmeden arka planda tamamen gizli (stealth) çalışması için bir VBScript oluşturabilirsiniz.
+1. Bilgisayarınızda `asa_screenshot_tool.vbs` adında yeni bir metin dosyası oluşturun.
+2. İçine şu kodları yapıştırın (Dosya yolunu kendi sisteminize göre düzenleyin):
+```vbs
+Set WshShell = CreateObject("WScript.Shell")
+WshShell.CurrentDirectory = "C:\Users\SeninAdin\repos\asa-screenshoter"
+WshShell.Run "pythonw.exe screenshot_tool.py", 0, False
+```
+3. Klavyeden `Win + R` tuşlarına basıp açılan kutuya `shell:startup` yazın. Açılan Başlangıç (Startup) klasörünün içine bu `.vbs` dosyasını atın. Artık bilgisayarınız her açıldığında araç arka planda hazır olacaktır.
+
+### 🛠️ Özelleştirme Ayarları (Ayarları Değiştirme)
+Uygulamanın varsayılan ayarlarını (FPS ve Kayıt Yeri) kendi isteğinize göre `screenshot_tool.py` dosyasından kolayca değiştirebilirsiniz:
+- **Dosyaların Kaydedileceği Klasör:** Satır `88` civarındaki `self.save_dir = os.path.expanduser("~\\Pictures\\Screenshots")` kodunu bularak istediğiniz bir klasör yolunu (Örn: `C:\\Kayıtlar`) yazabilirsiniz.
+- **Video FPS Ayarı:** Satır `275` civarındaki `fps = 25.0` değerini `30.0` (TV) veya `60.0` (Oyun akıcılığı) olarak değiştirebilirsiniz.
+
+### 👨‍💻 Geliştirici
+**Developer:** Altan Sezer Ayan
+*Bu araç, ASA Intelligence yapay zeka ve otomasyon sistemleri kapsamında geliştirilmiştir.*
