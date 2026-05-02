@@ -13,7 +13,7 @@ Bu proje, ASA Intelligence ekosistemi için tasarlanmış yüksek performanslı,
 
 ### 🚀 Özellikler
 - **Hızlı Ekran Görüntüsü (Screenshot):** İstenilen bir ekran bölgesini seçerek yüksek kalitede anında PNG olarak kaydeder.
-- **Yüksek Kalite Video Kaydı:** Ekranın sadece belirlediğiniz bir alanını, orijinal çözünürlük oranlarını bozmadan (720p/1080p uyumlu), MP4 formatında saniyede 20 kare (FPS) hızında video olarak çeker.
+- **Yüksek Kalite Video Kaydı:** Ekranın sadece belirlediğiniz bir alanını, orijinal çözünürlük oranlarını bozmadan (720p/1080p uyumlu), MP4 formatında saniyede 24 kare (FPS - Sinematik Standart) hızında video olarak çeker.
 - **Akıllı Pano (Clipboard) Yönetimi:** Kaydedilen fotoğraf veya videoları hem *dosya (CF_HDROP)* hem de *metin/bağlantı (CF_UNICODETEXT)* olarak panoya kopyalar.
 - **Single Instance (Tekil Çalışma):** Windows Mutex mekanizması sayesinde sistemde aynı anda sadece tek bir uygulamanın çalışmasına izin verilir.
 - **DPI Farkındalığı:** Windows'un ekran ölçeklendirmelerinden etkilenmez; seçimleri orijinal fiziksel pikseller üzerinden kaydeder.
@@ -65,7 +65,7 @@ This project is a high-performance, background-running screen capture and video 
 
 ### 🚀 Features
 - **Instant Screenshots:** Select any screen region and save it instantly as a high-quality PNG.
-- **High-Quality Video Recording:** Record a specific screen region in MP4 format at 20 FPS without stretching or losing the original aspect ratio.
+- **High-Quality Video Recording:** Record a specific screen region in MP4 format at 24 FPS (Cinematic Standard) without stretching or losing the original aspect ratio.
 - **Smart Dual-Clipboard Integration:** Copies captured photos or videos to the clipboard simultaneously as both a *File Object (CF_HDROP)* and *Text/Path (CF_UNICODETEXT)*.
 - **Single Instance Lock:** Uses Windows Mutex to guarantee that only one instance of the application runs at any given time.
 - **DPI Awareness:** Immune to Windows display scaling issues; it precisely maps logical coordinates to physical pixels.
