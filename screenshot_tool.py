@@ -272,7 +272,7 @@ class ScreenshotApp:
         
         # OpenCV (cv2) Video Kaydedici nesnesi oluşturuluyor
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        fps = 24.0
+        fps = 25.0
         out = cv2.VideoWriter(filepath, fourcc, fps, (w, h))
         
         def record():
@@ -295,7 +295,7 @@ class ScreenshotApp:
                     frame = cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)
                     out.write(frame)
                     
-                    # Çekilen videonun aşırı hızlanmaması veya yavaşlamaması için FPS'yi (24.0) sabitliyoruz
+                    # Çekilen videonun aşırı hızlanmaması veya yavaşlamaması için FPS'yi (25.0) sabitliyoruz
                     elapsed = time.time() - start_time
                     time_to_sleep = max(1.0/fps - elapsed, 0)
                     time.sleep(time_to_sleep)
