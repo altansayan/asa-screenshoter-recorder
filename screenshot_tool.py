@@ -25,6 +25,7 @@ import numpy as np
 import win32event
 import win32api
 import winerror
+import winreg
 
 class DROPFILES(ctypes.Structure):
     """
@@ -354,11 +355,28 @@ class ScreenshotApp:
             self.record_thread.join() # Thread'in işini sağ salim bitirmesini bekler
         self.stop_root.destroy() # Kırmızı butonu yok eder
 
+def add_to_startup():
+    """
+    Eğer uygulama (.exe) olarak çalışıyorsa, kendisini Windows başlangıcına (Registry) otomatik ekler.
+    """
+    if getattr(sys, 'frozen', False): # Sadece PyInstaller ile EXE yapıldığında tetiklenir
+        app_path = sys.executable
+        try:
+            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Run", 0, winreg.KEY_ALL_ACCESS)
+            # Yolu tırnak içine alarak ekle
+            winreg.SetValueEx(key, "ASA_Screenshot_Tool", 0, winreg.REG_SZ, f'"{app_path}"')
+            winreg.CloseKey(key)
+        except Exception as e:
+            print(f"[HATA] Registry baslangicina eklenirken sorun olustu: {e}")
+
 def main():
     """
     Programın ana yürütme noktasıdır.
     Mutex kontrolünü yapar, ekrana bilgileri yazar ve sistem dinlemeye başlar.
     """
+    # Exe modundaysa başlangıca otomatik kayıt ol
+    add_to_startup()
+    
     # Sadece TEK BIR uygulamanin calismasini garantiye al (Single Instance Lock / Mutex)
     # Eğer ikinci bir python penceresinden bu kod başlatılırsa, ilk olan ezilmemesi için ikinci kapanır.
     mutex = win32event.CreateMutex(None, False, "ASA_Screenshot_Video_Tool_Mutex_Lock")
