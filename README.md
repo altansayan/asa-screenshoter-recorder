@@ -1,11 +1,11 @@
-# ASA Screenshot & Video Tool
+# ASA Screenshot & Screen Video Recorder Tool
 
 *( [🇬🇧 English Version](#english-version) | [🇹🇷 Türkçe Okumaya Devam Et](#turkish-version) )*
 
 ---
 
 <a id="english-version"></a>
-## 🇬🇧 ASA Screenshot & Video Tool (English)
+## 🇬🇧 ASA Screenshot & Screen Video Recorder Tool (English) - For Testers, Analysts and Developers
 
 > [!WARNING]
 > **System Requirement:** This tool is designed **exclusively for Windows**. It relies heavily on Windows core libraries (Win32 API) for Clipboard management (CF_HDROP), Mutex (Single Instance), and DPI awareness. It will not work on macOS or Linux.
@@ -69,7 +69,7 @@ You can easily change the default settings (FPS and Save Directory) directly ins
 ---
 
 <a id="turkish-version"></a>
-## 🇹🇷 ASA Screenshot & Video Tool (Türkçe)
+## 🇹🇷 ASA Screenshot & Screen Video Recorder Tool (Türkçe) - For Testers, Analysts and Developers
 
 > [!WARNING]
 > **Sistem Gereksinimi:** Bu araç; Pano (Clipboard) yönetimi, Mutex (Single Instance) ve DPI API'leri doğrudan Windows'un çekirdek kütüphanelerine (Win32) bağlı olduğu için **sadece Windows işletim sistemlerinde** çalışmak üzere tasarlanmıştır. macOS veya Linux'ta çalışmaz.
