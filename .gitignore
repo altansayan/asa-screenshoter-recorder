@@ -23,3 +23,8 @@ Thumbs.db
 *.log
 *.tmp
 *.bak
+
+# PyInstaller klasörleri
+build/
+dist/
+*.spec
