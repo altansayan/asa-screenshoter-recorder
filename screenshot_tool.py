@@ -26,6 +26,7 @@ import win32event
 import win32api
 import winerror
 import winreg
+import locale
 
 class DROPFILES(ctypes.Structure):
     """
@@ -369,21 +370,86 @@ def add_to_startup():
         except Exception as e:
             print(f"[HATA] Registry baslangicina eklenirken sorun olustu: {e}")
 
+def show_splash_screen(already_running=False):
+    """
+    Kullanıcıya programın başladığını veya zaten çalıştığını bildiren zarif,
+    otomatik dil tanımalı (TR/EN) geçici açılış ekranıdır.
+    """
+    try:
+        lang = locale.getdefaultlocale()[0]
+        is_turkish = lang and lang.startswith('tr')
+    except Exception:
+        is_turkish = False
+        
+    splash = tk.Tk()
+    splash.overrideredirect(True) # Çerçevesiz (Kapatma tuşu vs. yok)
+    splash.attributes('-topmost', True) # Hep en üstte
+    splash.configure(bg='#2d3436') # Havalı koyu gri arka plan
+    
+    # Ekranın tam ortasına yerleştir
+    w = 480
+    h = 160
+    ws = splash.winfo_screenwidth()
+    hs = splash.winfo_screenheight()
+    x = int((ws/2) - (w/2))
+    y = int((hs/2) - (h/2))
+    splash.geometry(f'{w}x{h}+{x}+{y}')
+    
+    title_lbl = tk.Label(splash, text="ASA Screenshot & Screen Video Recorder Tool", font=('Segoe UI', 12, 'bold'), bg='#2d3436', fg='#0984e3')
+    title_lbl.pack(pady=(20, 10))
+    
+    status_lbl = tk.Label(splash, font=('Segoe UI', 10), bg='#2d3436', fg='#dfe6e9')
+    status_lbl.pack(pady=5)
+    
+    copy_lbl = tk.Label(splash, text="Copyright © 2026 Altan Sezer Ayan", font=('Segoe UI', 8), bg='#2d3436', fg='#636e72')
+    copy_lbl.pack(side='bottom', pady=10)
+
+    if already_running:
+        if is_turkish:
+            status_lbl.config(text="Uygulama zaten arka planda çalışıyor!")
+        else:
+            status_lbl.config(text="Application is already running in the background!")
+        
+        # 2 saniye göster ve kapan
+        splash.after(2000, splash.destroy)
+        splash.mainloop()
+    else:
+        if is_turkish:
+            status_lbl.config(text="Başlatılıyor...")
+            ready_text = "Tamamlandı! (Shift+Alt ile kullanabilirsiniz)"
+        else:
+            status_lbl.config(text="Starting...")
+            ready_text = "Ready! (You can use the Shift+Alt shortcut)"
+            
+        def show_ready():
+            status_lbl.config(text=ready_text, fg='#00b894') # Yeşile döner
+            splash.after(2500, splash.destroy) # 2.5s sonra kapat
+            
+        # 1 saniye başlatılıyor yazısı kalsın, sonra hazır ekranını göster
+        splash.after(1000, show_ready) 
+        splash.mainloop()
+
 def main():
     """
     Programın ana yürütme noktasıdır.
     Mutex kontrolünü yapar, ekrana bilgileri yazar ve sistem dinlemeye başlar.
     """
-    # Exe modundaysa başlangıca otomatik kayıt ol
-    add_to_startup()
-    
     # Sadece TEK BIR uygulamanin calismasini garantiye al (Single Instance Lock / Mutex)
     # Eğer ikinci bir python penceresinden bu kod başlatılırsa, ilk olan ezilmemesi için ikinci kapanır.
     mutex = win32event.CreateMutex(None, False, "ASA_Screenshot_Video_Tool_Mutex_Lock")
     if win32api.GetLastError() == winerror.ERROR_ALREADY_EXISTS:
-        print("[UYARI] Arac zaten arka planda calisiyor! Yeni bir kopya acilmayacak.")
-        sys.exit(0)
-
+        print("[BILGI] Uygulama zaten calisiyor. Ikinci kopya kapatiliyor.")
+        show_splash_screen(already_running=True)
+        return
+        
+    # Exe modundaysa başlangıca otomatik kayıt ol
+    add_to_startup()
+    
+    # Başlangıç splash ekranını göster
+    show_splash_screen(already_running=False)
+    
+    app = ScreenshotApp()
+    
     print("=====================================================")
     print(" ASA Screenshot & Video Araci Baslatildi!")
     print(" Kısayol: Secim baslatmak icin 'Shift + Alt' tuslarina basin.")
