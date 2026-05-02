@@ -66,6 +66,9 @@ You can easily change the default settings (FPS and Save Directory) directly ins
 **Developer:** Altan Sezer Ayan
 *Developed under the ASA Intelligence AI and automation systems.*
 
+### 📄 License
+This project is open-source and distributed under the **MIT License**. You are free to use, modify, and distribute it. See the `LICENSE` file for more details.
+
 ---
 
 <a id="turkish-version"></a>
@@ -129,3 +132,6 @@ Uygulamanın varsayılan ayarlarını (FPS ve Kayıt Yeri) kendi isteğinize gö
 ### 👨‍💻 Geliştirici
 **Developer:** Altan Sezer Ayan
 *Bu araç, ASA Intelligence yapay zeka ve otomasyon sistemleri kapsamında geliştirilmiştir.*
+
+### 📄 Lisans
+Bu proje açık kaynaklıdır ve **MIT Lisansı** ile lisanslanmıştır. Tamamen ücretsiz olarak kullanabilir, değiştirebilir ve dağıtabilirsiniz. Detaylar için `LICENSE` dosyasına göz atın.
