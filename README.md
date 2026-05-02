@@ -10,6 +10,9 @@
 > [!WARNING]
 > **Sistem Gereksinimi:** Bu araç; Pano (Clipboard) yönetimi, Mutex (Single Instance) ve DPI API'leri doğrudan Windows'un çekirdek kütüphanelerine (Win32) bağlı olduğu için **sadece Windows işletim sistemlerinde** çalışmak üzere tasarlanmıştır. macOS veya Linux'ta çalışmaz.
 
+> [!TIP]
+> ⚡ **Yapay Zeka (AI) ve Terminal (CLI) Araçları İçin Üretildi!** Kaydedilen görsellerin dosya yolları anında panoya düşer. Terminalinize veya yapay zeka asistanınıza saniyeler içinde yapıştırın ve geliştirme hızınızı (workflow) ikiye katlayın! Sadece (Ctrl+V)
+
 Bu proje, ASA Intelligence ekosistemi için tasarlanmış yüksek performanslı, arka planda çalışan ve global kısayollarla (Shift+Alt) tetiklenen bir ekran kaydetme (görüntü & video) ve pano (clipboard) otomasyon aracıdır.
 
 ### 🚀 Özellikler
@@ -67,6 +70,9 @@ Uygulamanın varsayılan ayarlarını (FPS ve Kayıt Yeri) kendi isteğinize gö
 
 > [!WARNING]
 > **System Requirement:** This tool is designed **exclusively for Windows**. It relies heavily on Windows core libraries (Win32 API) for Clipboard management (CF_HDROP), Mutex (Single Instance), and DPI awareness. It will not work on macOS or Linux.
+
+> [!TIP]
+> ⚡ **Built for Artificial Intelligence (AI) and Terminal (CLI) Tools!** Captured image paths land instantly in your clipboard. Paste them into your terminal or AI assistant in seconds and double your development speed (workflow)! Just (Ctrl+V)
 
 This project is a high-performance, background-running screen capture and video recording automation tool triggered by global hotkeys (Shift+Alt), developed for the ASA Intelligence ecosystem.
 
