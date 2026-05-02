@@ -50,6 +50,11 @@ WshShell.Run "pythonw.exe screenshot_tool.py", 0, False
 ```
 3. Klavyeden `Win + R` tuşlarına basıp açılan kutuya `shell:startup` yazın. Açılan Başlangıç (Startup) klasörünün içine bu `.vbs` dosyasını atın. Artık bilgisayarınız her açıldığında araç arka planda hazır olacaktır.
 
+### 🛠️ Özelleştirme Ayarları (Ayarları Değiştirme)
+Uygulamanın varsayılan ayarlarını (FPS ve Kayıt Yeri) kendi isteğinize göre `screenshot_tool.py` dosyasından kolayca değiştirebilirsiniz:
+- **Dosyaların Kaydedileceği Klasör:** Satır `88` civarındaki `self.save_dir = os.path.expanduser("~\\Pictures\\Screenshots")` kodunu bularak istediğiniz bir klasör yolunu (Örn: `C:\\Kayıtlar`) yazabilirsiniz.
+- **Video FPS Ayarı:** Satır `275` civarındaki `fps = 25.0` değerini `30.0` (TV) veya `60.0` (Oyun akıcılığı) olarak değiştirebilirsiniz.
+
 ### 👨‍💻 Geliştirici
 **Developer:** Altan Sezer Ayan
 *Bu araç, ASA Intelligence yapay zeka ve otomasyon sistemleri kapsamında geliştirilmiştir.*
@@ -101,6 +106,11 @@ WshShell.CurrentDirectory = "C:\Users\YourName\repos\asa-screenshoter"
 WshShell.Run "pythonw.exe screenshot_tool.py", 0, False
 ```
 3. Press `Win + R`, type `shell:startup`, and press Enter. Move the `.vbs` file into this Startup folder. The tool will now start automatically in stealth mode on every boot.
+
+### 🛠️ Customization (Changing Settings)
+You can easily change the default settings (FPS and Save Directory) directly inside the `screenshot_tool.py` file:
+- **Save Directory:** Locate line `88` approx. `self.save_dir = os.path.expanduser("~\\Pictures\\Screenshots")` and change it to any absolute path (e.g., `C:\\Records`).
+- **Video FPS Rate:** Locate line `275` approx. `fps = 25.0` and change the value to `30.0` or `60.0` depending on your required smoothness.
 
 ### 👨‍💻 Developer
 **Developer:** Altan Sezer Ayan
