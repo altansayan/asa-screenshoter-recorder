@@ -388,7 +388,7 @@ def show_splash_screen(already_running=False):
     
     # Ekranın tam ortasına yerleştir
     w = 480
-    h = 160
+    h = 200
     ws = splash.winfo_screenwidth()
     hs = splash.winfo_screenheight()
     x = int((ws/2) - (w/2))
@@ -402,7 +402,23 @@ def show_splash_screen(already_running=False):
     status_lbl.pack(pady=5)
     
     copy_lbl = tk.Label(splash, text="Copyright © 2026 Altan Sezer Ayan", font=('Segoe UI', 8), bg='#2d3436', fg='#636e72')
-    copy_lbl.pack(side='bottom', pady=10)
+    copy_lbl.pack(side='bottom', pady=(5, 10))
+
+    # Tamam butonu ve Geri Sayım Mantığı
+    btn_text_base = "Tamam" if is_turkish else "OK"
+    ok_btn = tk.Button(splash, text=f"{btn_text_base} (5)", font=('Segoe UI', 9, 'bold'), bg='#636e72', fg='white', state=tk.DISABLED, command=splash.destroy, relief=tk.FLAT, activebackground='#74b9ff', activeforeground='white')
+    ok_btn.pack(side='bottom', pady=(0, 10), ipadx=30, ipady=3)
+
+    def countdown(count):
+        # Pencere kapatılmışsa geri sayımı durdur
+        if not splash.winfo_exists():
+            return
+            
+        if count > 0:
+            ok_btn.config(text=f"{btn_text_base} ({count})")
+            splash.after(1000, countdown, count-1)
+        else:
+            ok_btn.config(text=btn_text_base, state=tk.NORMAL, bg='#0984e3', cursor='hand2')
 
     if already_running:
         if is_turkish:
@@ -410,8 +426,7 @@ def show_splash_screen(already_running=False):
         else:
             status_lbl.config(text="Application is already running in the background!")
         
-        # 2 saniye göster ve kapan
-        splash.after(2000, splash.destroy)
+        countdown(5)
         splash.mainloop()
     else:
         if is_turkish:
@@ -422,11 +437,12 @@ def show_splash_screen(already_running=False):
             ready_text = "Ready! (You can use the Shift+Alt shortcut)"
             
         def show_ready():
-            status_lbl.config(text=ready_text, fg='#00b894') # Yeşile döner
-            splash.after(2500, splash.destroy) # 2.5s sonra kapat
+            if splash.winfo_exists():
+                status_lbl.config(text=ready_text, fg='#00b894') # Yeşile döner
             
         # 1 saniye başlatılıyor yazısı kalsın, sonra hazır ekranını göster
         splash.after(1000, show_ready) 
+        countdown(5)
         splash.mainloop()
 
 def main():
