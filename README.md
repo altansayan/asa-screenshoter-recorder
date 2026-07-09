@@ -33,7 +33,7 @@ pip install pillow pyperclip keyboard pywin32 mss opencv-python numpy
 
 **What do these dependencies do?**
 1. **Pillow (PIL)**: Captures images and converts pixel formats.
-2. **keyboard**: Listens to global keyboard shortcuts (`Shift+Alt`) in the background.
+2. **keyboard**: Listens to the global `Shift+Alt` shortcut in the background. A watchdog thread re-installs this hook every 60 seconds so the shortcut recovers automatically if Windows silently detaches it after the PC wakes from sleep or the screen is locked.
 3. **pywin32**: Provides low-level Windows API access for robust clipboard manipulation and Mutex locks.
 4. **mss**: An ultra-fast, zero-latency screen capture library used to grab frames for video recording.
 5. **opencv-python**: Encodes the captured frames into an MP4 video file.
@@ -109,7 +109,7 @@ pip install pillow pyperclip keyboard pywin32 mss opencv-python numpy
 
 **Bağımlılıkların İşlevleri:**
 1. **Pillow (PIL)**: Ekran görüntülerini yakalamak ve formatlarını dönüştürmek için.
-2. **keyboard**: Arka planda klavye kısayollarını (`Shift+Alt`) dinlemek için.
+2. **keyboard**: Arka planda `Shift+Alt` global kısayolunu dinlemek için. Ayrı bir bekçi (watchdog) thread'i bu hook'u her 60 saniyede bir yeniden kurar; böylece bilgisayar uykudan uyandığında veya ekran kilitlendiğinde Windows hook'u sessizce koparsa bile kısayol en geç 60 saniye içinde kendini toparlar.
 3. **pywin32**: Windows API erişimi (Pano yönetimi ve Mutex kilitleri) için.
 4. **mss**: Video kaydı için ekranı sıfır gecikmeyle (ultra hızlı) kopyalamak için.
 5. **opencv-python**: Kareleri birleştirip MP4 formatında video kodlamak için.

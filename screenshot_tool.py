@@ -75,6 +75,55 @@ def copy_file_to_clipboard(filepath):
         print(f"[HATA] Dosya panoya kopyalanamadi: {e}")
         return False
 
+def is_turkish_locale():
+    """
+    Sistem dilini algilar. Sadece TR/EN ayrimi yapar; desteklenmeyen bir sistem
+    dilinde (ör. Almanca, Fransizca) varsayilan olarak Ingilizce'ye duser.
+    Hem splash ekrani hem de secim ekrani metinleri bu tek fonksiyonu kullanir.
+    """
+    try:
+        lang = locale.getdefaultlocale()[0]
+        return bool(lang and lang.startswith('tr'))
+    except Exception:
+        return False
+
+INFO_TEXTS = {
+    'photo': {
+        'tr': "📷 Ekran Görüntüsü İçin Farenizi Sürükleyin. Video Kaydı İçin 'R' Tuşuna Basın. Çıkış İçin: 'Esc'",
+        'en': "📷 Drag Your Mouse To Select A Screenshot Area. Press 'R' For Video Recording. Press 'Esc' To Exit",
+    },
+    'video': {
+        'tr': "🎥 Video Modu: Kayıt Edilecek Alanı Seçin. Kapatmak İçin 'R'. Çıkış İçin: 'Esc'",
+        'en': "🎥 Video Mode: Select The Area To Record. Press 'R' To Turn Off. Press 'Esc' To Exit",
+    },
+}
+
+capture_event = threading.Event()
+
+def _on_hotkey_pressed():
+    """keyboard kütüphanesinin hook thread'inde çalışır; sadece bir sinyal (Event) tetikler.
+    Tkinter arayüzünü doğrudan burada oluşturmuyoruz çünkü Tkinter ana thread'de çalışmak zorunda."""
+    capture_event.set()
+
+def install_hotkey_hook():
+    keyboard.add_hotkey('shift+alt', _on_hotkey_pressed)
+
+def hotkey_watchdog():
+    """
+    keyboard kütüphanesinin low-level klavye hook'u (WH_KEYBOARD_LL), bilgisayar uykuya
+    girip çıktığında veya ekran kilitlendiğinde Windows tarafından sessizce koparılabiliyor
+    ve kısayol bir daha hiç tepki vermiyor (kütüphanenin bilinen bir sınırlaması, hata da basmıyor).
+    Bu thread her 60 saniyede bir hook'u sıfırdan söküp yeniden kurarak, kısayolun uyku/uyanma
+    döngülerinden en fazla 60 saniyelik gecikmeyle kendini toparlamasını sağlar.
+    """
+    while True:
+        time.sleep(60)
+        try:
+            keyboard.unhook_all()
+            install_hotkey_hook()
+        except Exception as e:
+            print(f"[HATA] Kisayol yenilenirken sorun olustu: {e}")
+
 class ScreenshotApp:
     """
     Ekran kaydı (resim veya video) yapmak için gerekli arayüz ve mantığı barındıran ana sınıf.
@@ -99,6 +148,7 @@ class ScreenshotApp:
         self.record_mode = False
         self.stop_event = threading.Event()
         self.record_thread = None
+        self.is_turkish = is_turkish_locale()
         
         # Ekran görüntüleri ve videoları kaydedeceğimiz klasör yolu oluşturulur
         self.save_dir = os.path.expanduser("~\\Pictures\\Screenshots")
@@ -132,14 +182,24 @@ class ScreenshotApp:
         # R tuşuna basınca video moduna geç (Dil ve CapsLock'tan bagimsiz global klavye kontrolü)
         self.root.bind("<Key>", self.check_key_press)
         self.root.bind("<Escape>", lambda e: self.root.destroy())
-        
-        # Ekranda sol üstteki bilgilendirme metni
-        self.info_text = self.canvas.create_text(
-            10, 10, anchor="nw", 
-            text="Resim Secimi Icin Farenizi Surukleyin. Video kaydetmek icin 'R' tusuna basin. Iptal icin ESC.", 
-            fill="white", font=("Arial", 14, "bold")
+
+        # Bilgilendirme metni ayrı, TAM OPAK bir pencerede gösterilir.
+        # Sebep: Metni ana pencerenin canvas'ına yazarsak, ana pencerenin %30 saydamlığından
+        # (yukarıdaki -alpha ayarı) metin de etkilenir ve okunaksız hale gelir. Bu Toplevel,
+        # kendi başına tam opak olduğu için arkasındaki saydam seçim alanından etkilenmez.
+        self.info_win = tk.Toplevel(self.root)
+        self.info_win.overrideredirect(True)
+        self.info_win.attributes("-topmost", True)
+        self.info_win.configure(bg="black")
+        self.info_win.geometry("+20+20")
+        self.info_label = tk.Label(
+            self.info_win,
+            text=INFO_TEXTS['photo']['tr' if self.is_turkish else 'en'],
+            fg="white", bg="black", font=("Arial", 14, "bold"),
+            padx=10, pady=6
         )
-        
+        self.info_label.pack()
+
         self.root.focus_force()
         self.root.mainloop()
 
@@ -162,11 +222,13 @@ class ScreenshotApp:
         if self.record_mode:
             self.root.attributes("-alpha", 0.4)
             self.canvas.configure(bg="#400000") # Hafif kırmızı arkaplan
-            self.canvas.itemconfig(self.info_text, text="🎥 VIDEO MODU: Kayit edilecek alani secin. Kapatmak icin 'R'", fill="yellow")
+            self.info_win.configure(bg="#400000")
+            self.info_label.configure(text=INFO_TEXTS['video']['tr' if self.is_turkish else 'en'], fg="yellow", bg="#400000")
         else:
             self.root.attributes("-alpha", 0.3)
             self.canvas.configure(bg="black")
-            self.canvas.itemconfig(self.info_text, text="Resim Secimi Icin Farenizi Surukleyin. Video kaydetmek icin 'R' tusuna basin.", fill="white")
+            self.info_win.configure(bg="black")
+            self.info_label.configure(text=INFO_TEXTS['photo']['tr' if self.is_turkish else 'en'], fg="white", bg="black")
 
     def on_button_press(self, event):
         """
@@ -375,11 +437,7 @@ def show_splash_screen(already_running=False):
     Kullanıcıya programın başladığını veya zaten çalıştığını bildiren zarif,
     otomatik dil tanımalı (TR/EN) geçici açılış ekranıdır.
     """
-    try:
-        lang = locale.getdefaultlocale()[0]
-        is_turkish = lang and lang.startswith('tr')
-    except Exception:
-        is_turkish = False
+    is_turkish = is_turkish_locale()
         
     splash = tk.Tk()
     splash.overrideredirect(True) # Çerçevesiz (Kapatma tuşu vs. yok)
@@ -474,20 +532,23 @@ def main():
     show_splash_screen(already_running=False)
     
     app = ScreenshotApp()
-    
+
+    # Global klavye hook'unu kur ve uyku/uyanma sonrasi kendini toparlayan bekci thread'i baslat
+    install_hotkey_hook()
+    threading.Thread(target=hotkey_watchdog, daemon=True).start()
+
     print("=====================================================")
     print(" ASA Screenshot & Video Araci Baslatildi!")
     print(" Kısayol: Secim baslatmak icin 'Shift + Alt' tuslarina basin.")
     print(" Video Modu: Secim ekranindayken 'R' tusuna basin.")
     print(" Cikis: Bu pencereyi kapatin veya 'Ctrl+C' yapin.")
     print("=====================================================")
-    
-    app = ScreenshotApp()
-    
-    # Global klavye (işletim sistemi) hook'u kurarak Shift+Alt dinlemeye başlar
+
+    # Hook thread'inin sinyal verdigi Event'i bekler; tetiklenince ana thread'de (Tkinter icin zorunlu) capture baslatir
     while True:
         try:
-            keyboard.wait('shift+alt') # Ana program döngüsünü dondurup bu tuşu bekler
+            capture_event.wait()
+            capture_event.clear()
             app.start_capture()
         except KeyboardInterrupt:
             # Kullanıcı terminalde Ctrl+C yaparsa program temiz kapanır
