@@ -2,6 +2,12 @@
 
 Bu proje [Keep a Changelog](https://keepachangelog.com/) formatını ve [Semantic Versioning](https://semver.org/) kurallarını takip eder.
 
+## [1.2.0] - 2026-07-10
+
+### Added
+- Günlük kendini yeniden başlatma (self-restart) mekanizması: uygulama, en az bir gece yarısı (00:00) geçtikten sonra, video kaydı aktif değilken kendini tamamen kapatıp yeniden başlatır. Bu, haftalarca/aylarca hiç kapanmadan çalışan bir process'te üçüncü parti `keyboard` kütüphanesinin native hook döngüsünde zamanla oluşabilecek olası birikimleri günlük olarak sıfırlar.
+- Ana döngü artık kısayola hiç basılmasa bile 5 dakikada bir periyodik olarak uyanıp tarih kontrolü yapabiliyor (`capture_event.wait(timeout=300)`).
+
 ## [1.1.0] - 2026-07-10
 
 ### Fixed

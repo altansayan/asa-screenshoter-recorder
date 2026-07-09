@@ -16,6 +16,7 @@ from io import BytesIO
 from datetime import datetime
 import time
 import sys
+import subprocess
 import threading
 import ctypes
 from ctypes import wintypes
@@ -104,6 +105,26 @@ def _on_hotkey_pressed():
     """keyboard kütüphanesinin hook thread'inde çalışır; sadece bir sinyal (Event) tetikler.
     Tkinter arayüzünü doğrudan burada oluşturmuyoruz çünkü Tkinter ana thread'de çalışmak zorunda."""
     capture_event.set()
+
+def restart_application(mutex):
+    """
+    Gece yarisini (00:00) gectiginde ve uygulama bosta iken kendini tamamen kapatip
+    yeniden baslatir. Sebep: haftalarca/aylarca hic kapanmadan calisan bir process'te,
+    watchdog'un tekrar tekrar kurup soktugu klavye hook'unda zamanla kucuk bir sizinti
+    olma ihtimaline karsi (kesin degil, ama ucuncu parti 'keyboard' kutuphanesi icin
+    garanti verilemez), gunde bir kez tam temiz bir baslangic yapilir. Mutex once
+    birakilir ki yeni process kilidi hemen alabilsin.
+    """
+    try:
+        keyboard.unhook_all()
+    except Exception:
+        pass
+    try:
+        win32api.CloseHandle(mutex)
+    except Exception:
+        pass
+    subprocess.Popen([sys.executable])
+    sys.exit(0)
 
 def install_hotkey_hook():
     keyboard.add_hotkey('shift+alt', _on_hotkey_pressed)
@@ -544,10 +565,20 @@ def main():
     print(" Cikis: Bu pencereyi kapatin veya 'Ctrl+C' yapin.")
     print("=====================================================")
 
-    # Hook thread'inin sinyal verdigi Event'i bekler; tetiklenince ana thread'de (Tkinter icin zorunlu) capture baslatir
+    baslangic_tarihi = datetime.now().date()
+
+    # Hook thread'inin sinyal verdigi Event'i bekler; tetiklenince ana thread'de (Tkinter icin zorunlu) capture baslatir.
+    # timeout, kisayola hic basilmasa bile periyodik olarak uyanip gece yarisini kontrol edebilmek icin var.
     while True:
         try:
-            capture_event.wait()
+            tetiklendi = capture_event.wait(timeout=300)
+            if not tetiklendi:
+                # Zaman asimiyla uyandi (kisayola basilmadi) - gece yarisi gecti mi ve video kaydi aktif degil mi kontrol et
+                video_kaydi_aktif = app.record_thread is not None and app.record_thread.is_alive()
+                if datetime.now().date() != baslangic_tarihi and not video_kaydi_aktif:
+                    print("\n[BILGI] Gunluk bakim: uygulama bosta, kendini yeniden baslatiyor...")
+                    restart_application(mutex)
+                continue
             capture_event.clear()
             app.start_capture()
         except KeyboardInterrupt:
