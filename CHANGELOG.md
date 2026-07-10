@@ -2,6 +2,16 @@
 
 Bu proje [Keep a Changelog](https://keepachangelog.com/) formatını ve [Semantic Versioning](https://semver.org/) kurallarını takip eder.
 
+## [1.3.0] - 2026-07-11
+
+### Changed
+- **BREAKING:** Global kısayol `Shift+Alt`'tan **`Shift+Alt+S`**'ye değiştirildi.
+- Kısayol mekanizması tamamen değişti: üçüncü parti `keyboard` kütüphanesi (ve onun 60 saniyelik yenileme watchdog'u) kaldırıldı, yerine Windows'un yerel `RegisterHotKey` API'si kullanıldı. Gerçek kullanım testinde kanıtlandı: `keyboard` kütüphanesinin low-level hook'u uyku/uyanma sonrası yeniden kurulsa bile gerçek tuş olaylarını almayı kesebiliyordu (kök neden buydu, watchdog'un tekrar kurması yeterli değildi). `RegisterHotKey`, işletim sistemi tarafından oturum seviyesinde yönetildiği için uyku/uyanma/güç kesintisi sonrası da güvenilir çalışıyor — gerçek kullanımda test edilip doğrulandı.
+- Ana döngü artık `keyboard` kütüphanesi yerine doğrudan Windows mesaj döngüsü (`GetMessageW`/`WM_HOTKEY`/`WM_TIMER`) kullanıyor; günlük bakım kontrolü için 5 dakikalık `SetTimer` ile tetikleniyor.
+
+### Removed
+- Geçici teşhis (diagnostic) amacıyla eklenen log dosyası mekanizması kaldırıldı (kullanılmıyordu, gereksiz büyümesin diye).
+
 ## [1.2.0] - 2026-07-10
 
 ### Added

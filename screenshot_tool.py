@@ -9,7 +9,6 @@ arka planda ekran görüntüsü ve yüksek kalite MP4 video yakalamak için geli
 import tkinter as tk
 from PIL import ImageGrab
 import pyperclip
-import keyboard
 import os
 import win32clipboard
 from io import BytesIO
@@ -99,24 +98,38 @@ INFO_TEXTS = {
     },
 }
 
-capture_event = threading.Event()
+# Global kisayol: Shift+Alt+S. RegisterHotKey ile kaydedilir (bkz. register_global_hotkey docstring'i).
+WM_HOTKEY = 0x0312
+WM_TIMER = 0x0113
+MOD_ALT = 0x0001
+MOD_SHIFT = 0x0004
+MOD_NOREPEAT = 0x4000
+VK_S = 0x53
+HOTKEY_ID = 1
+TIMER_ID = 1
+GUNLUK_KONTROL_MS = 5 * 60 * 1000  # 5 dakika
 
-def _on_hotkey_pressed():
-    """keyboard kütüphanesinin hook thread'inde çalışır; sadece bir sinyal (Event) tetikler.
-    Tkinter arayüzünü doğrudan burada oluşturmuyoruz çünkü Tkinter ana thread'de çalışmak zorunda."""
-    capture_event.set()
+def register_global_hotkey():
+    """
+    Shift+Alt+S kombinasyonunu Windows'un RegisterHotKey API'sine kaydeder.
+    Sebep: 'keyboard' kutuphanesinin low-level klavye hook'u (WH_KEYBOARD_LL), uyku/uyanma
+    sonrasi Windows tarafindan hala 'kurulu' gorunse bile (tekrar tekrar yenilesek dahi)
+    gercek tus olaylarini almayi kesebildigi loglarla kanitlandi. RegisterHotKey ise
+    isletim sistemi tarafindan oturum seviyesinde yonetildigi icin bu sorundan etkilenmiyor
+    (tek sarti: en az bir modifier-disi gercek tus icermesi - 'S' bu yuzden eklendi).
+    """
+    ok = ctypes.windll.user32.RegisterHotKey(None, HOTKEY_ID, MOD_SHIFT | MOD_ALT | MOD_NOREPEAT, VK_S)
+    return bool(ok)
 
 def restart_application(mutex):
     """
     Gece yarisini (00:00) gectiginde ve uygulama bosta iken kendini tamamen kapatip
-    yeniden baslatir. Sebep: haftalarca/aylarca hic kapanmadan calisan bir process'te,
-    watchdog'un tekrar tekrar kurup soktugu klavye hook'unda zamanla kucuk bir sizinti
-    olma ihtimaline karsi (kesin degil, ama ucuncu parti 'keyboard' kutuphanesi icin
-    garanti verilemez), gunde bir kez tam temiz bir baslangic yapilir. Mutex once
-    birakilir ki yeni process kilidi hemen alabilsin.
+    yeniden baslatir. Sebep: haftalarca/aylarca hic kapanmadan calisan bir process'te
+    olasi birikimlere karsi (kesin degil ama garanti de verilemez), gunde bir kez tam
+    temiz bir baslangic yapilir. Mutex once birakilir ki yeni process kilidi hemen alabilsin.
     """
     try:
-        keyboard.unhook_all()
+        ctypes.windll.user32.UnregisterHotKey(None, HOTKEY_ID)
     except Exception:
         pass
     try:
@@ -125,25 +138,6 @@ def restart_application(mutex):
         pass
     subprocess.Popen([sys.executable])
     sys.exit(0)
-
-def install_hotkey_hook():
-    keyboard.add_hotkey('shift+alt', _on_hotkey_pressed)
-
-def hotkey_watchdog():
-    """
-    keyboard kütüphanesinin low-level klavye hook'u (WH_KEYBOARD_LL), bilgisayar uykuya
-    girip çıktığında veya ekran kilitlendiğinde Windows tarafından sessizce koparılabiliyor
-    ve kısayol bir daha hiç tepki vermiyor (kütüphanenin bilinen bir sınırlaması, hata da basmıyor).
-    Bu thread her 60 saniyede bir hook'u sıfırdan söküp yeniden kurarak, kısayolun uyku/uyanma
-    döngülerinden en fazla 60 saniyelik gecikmeyle kendini toparlamasını sağlar.
-    """
-    while True:
-        time.sleep(60)
-        try:
-            keyboard.unhook_all()
-            install_hotkey_hook()
-        except Exception as e:
-            print(f"[HATA] Kisayol yenilenirken sorun olustu: {e}")
 
 class ScreenshotApp:
     """
@@ -177,7 +171,7 @@ class ScreenshotApp:
         
     def start_capture(self):
         """
-        Shift+Alt tuşlarına basıldığında çağrılır. 
+        Shift+Alt+S tuşlarına basıldığında çağrılır.
         Tüm ekranı kaplayan, şeffaf bir 'tkinter' penceresi (canvas) açar.
         Kullanıcı fareyle çizim yaparken bu ekran üzerinden koordinatlar alınır.
         """
@@ -480,8 +474,8 @@ def show_splash_screen(already_running=False):
     status_lbl = tk.Label(splash, font=('Segoe UI', 10), bg='#2d3436', fg='#dfe6e9')
     status_lbl.pack(pady=(5, 10))
 
-    instr_text_tr = "📷 Ekran Görüntüsü İçin: Sadece Shift+Alt\n🎥 Video Kaydı: Shift+Alt işaretçi açıldıktan sonra 'R' tuşu"
-    instr_text_en = "📷 Screenshot: Only Shift+Alt\n🎥 Video Record: Shift+Alt pointer then press 'R' key"
+    instr_text_tr = "📷 Ekran Görüntüsü İçin: Shift+Alt+S\n🎥 Video Kaydı: Shift+Alt+S sonrasında 'R' tuşu"
+    instr_text_en = "📷 Screenshot: Shift+Alt+S\n🎥 Video Record: Shift+Alt+S then press 'R' key"
     instr_text = instr_text_tr if is_turkish else instr_text_en
     
     instr_lbl = tk.Label(splash, text=instr_text, font=('Segoe UI', 9), bg='#2d3436', fg='#fdcb6e', justify='center')
@@ -554,39 +548,43 @@ def main():
     
     app = ScreenshotApp()
 
-    # Global klavye hook'unu kur ve uyku/uyanma sonrasi kendini toparlayan bekci thread'i baslat
-    install_hotkey_hook()
-    threading.Thread(target=hotkey_watchdog, daemon=True).start()
+    # Global kisayolu (Shift+Alt+S) ve gunluk bakim kontrolu icin periyodik zamanlayiciyi kur
+    if not register_global_hotkey():
+        print("[HATA] Global kisayol (Shift+Alt+S) kaydedilemedi. Baska bir uygulama kullaniyor olabilir.")
+        sys.exit(1)
+    ctypes.windll.user32.SetTimer(None, TIMER_ID, GUNLUK_KONTROL_MS, None)
 
     print("=====================================================")
     print(" ASA Screenshot & Video Araci Baslatildi!")
-    print(" Kısayol: Secim baslatmak icin 'Shift + Alt' tuslarina basin.")
+    print(" Kısayol: Secim baslatmak icin 'Shift + Alt + S' tuslarina basin.")
     print(" Video Modu: Secim ekranindayken 'R' tusuna basin.")
     print(" Cikis: Bu pencereyi kapatin veya 'Ctrl+C' yapin.")
     print("=====================================================")
 
     baslangic_tarihi = datetime.now().date()
 
-    # Hook thread'inin sinyal verdigi Event'i bekler; tetiklenince ana thread'de (Tkinter icin zorunlu) capture baslatir.
-    # timeout, kisayola hic basilmasa bile periyodik olarak uyanip gece yarisini kontrol edebilmek icin var.
-    while True:
-        try:
-            tetiklendi = capture_event.wait(timeout=300)
-            if not tetiklendi:
-                # Zaman asimiyla uyandi (kisayola basilmadi) - gece yarisi gecti mi ve video kaydi aktif degil mi kontrol et
+    # Bu thread'in mesaj kuyruguna gelen WM_HOTKEY (kisayol) ve WM_TIMER (periyodik kontrol) mesajlarini dinler.
+    # RegisterHotKey isletim sistemi tarafindan oturum seviyesinde yonetildigi icin uyku/uyanma/ekran kilidinden etkilenmez.
+    try:
+        msg = wintypes.MSG()
+        while ctypes.windll.user32.GetMessageW(ctypes.byref(msg), None, 0, 0) != 0:
+            if msg.message == WM_HOTKEY and msg.wParam == HOTKEY_ID:
+                app.start_capture()
+            elif msg.message == WM_TIMER and msg.wParam == TIMER_ID:
                 video_kaydi_aktif = app.record_thread is not None and app.record_thread.is_alive()
                 if datetime.now().date() != baslangic_tarihi and not video_kaydi_aktif:
-                    print("\n[BILGI] Gunluk bakim: uygulama bosta, kendini yeniden baslatiyor...")
                     restart_application(mutex)
-                continue
-            capture_event.clear()
-            app.start_capture()
-        except KeyboardInterrupt:
-            # Kullanıcı terminalde Ctrl+C yaparsa program temiz kapanır
-            print("\nCikis yapiliyor...")
-            sys.exit(0)
-        except Exception as e:
-            print(f"\n[HATA] Bir sorun olustu: {e}")
+            ctypes.windll.user32.TranslateMessage(ctypes.byref(msg))
+            ctypes.windll.user32.DispatchMessageW(ctypes.byref(msg))
+    except KeyboardInterrupt:
+        # Kullanıcı terminalde Ctrl+C yaparsa program temiz kapanır
+        print("\nCikis yapiliyor...")
+    except Exception as e:
+        print(f"\n[HATA] Bir sorun olustu: {e}")
+    finally:
+        ctypes.windll.user32.KillTimer(None, TIMER_ID)
+        ctypes.windll.user32.UnregisterHotKey(None, HOTKEY_ID)
+        sys.exit(0)
 
 if __name__ == "__main__":
     main()
