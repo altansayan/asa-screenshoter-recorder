@@ -2,6 +2,15 @@
 
 Bu proje [Keep a Changelog](https://keepachangelog.com/) formatını ve [Semantic Versioning](https://semver.org/) kurallarını takip eder.
 
+## [1.3.1] - 2026-07-14
+
+### Fixed
+- Uygulama bazen açılışta `ImportError: cannot import name '_umath_linalg' from partially initialized module 'numpy.linalg'` hatasıyla çöküyordu. Kök neden: `.spec` dosyaları onefile modunda derleniyordu, yani numpy/opencv'nin tüm DLL'leri (~70 MB) her açılışta yeniden `%TEMP%\_MEIxxxxxx` klasörüne extract ediliyordu; bu tekrarlanan extract sırasında antivirüs taramasının dosyaları anlık kilitlemesi, Python'un derlenmiş `_umath_linalg` alt modülünü "yarım" görmesine yol açıyordu (aynı anda görülen "Failed to remove temporary directory" uyarısı da bunun kanıtıydı).
+- **Not:** İlk aşamada `upx=True` ayarı şüpheli görülüp `upx=False` yapıldı, fakat bu makinede UPX zaten hiç kurulu değildi (etkisizdi) — asıl kök neden bu değildi.
+
+### Changed
+- `screenshot_tool.spec`, `screenshotandrecoder.spec` ve `asa_screen.spec` dosyaları **onefile'dan onedir moduna** geçirildi (`EXE(..., exclude_binaries=True)` + `COLLECT(...)`). DLL'ler artık build sırasında bir kez `dist/<isim>/` klasörüne yazılıyor, her açılışta yeniden extract edilmiyor — antivirüs yarış durumu tamamen ortadan kalktı. Dağıtım artık tek bir `.exe` değil, exe + `_internal/` klasörünü birlikte içeren bir dizin (`add_to_startup()` fonksiyonu `sys.executable` kullandığı için Windows başlangıç kaydı otomatik doğru yolu buluyor, kod değişikliği gerekmedi).
+
 ## [1.3.0] - 2026-07-11
 
 ### Changed

@@ -27,4 +27,3 @@ Thumbs.db
 # PyInstaller klasörleri
 build/
 dist/
-*.spec
